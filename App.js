@@ -6,8 +6,97 @@ import {
   View,
   Text,
   Image,
-  StyleSheet
+  StyleSheet,
+  TouchableHighlight
 } from 'react-native';
+import { Linking } from 'expo';
+
+
+const YourOwnComponent = () => <Text>Your Pretty Component Goes Here</Text>
+
+class App extends React.Component{
+  state = {
+    isLoaded: false, 
+    movies: []
+  }
+  
+  componentDidMount(){
+    axios.get('https://backend-steel.now.sh/movies')
+    .then((res) => {
+      this.setState({
+        movies: res.data,
+        isLoaded: true
+      })
+    })
+    .catch(error => console.log(error))
+  }
+  
+  render(){  
+    if(this.state.isLoaded){
+      console.log(`The number of movies is ${this.state.movies.length}`)
+      return(
+        <>
+        <View style={{flex: 1}}>
+        <ScrollView style={{width: '100%', flex: 1, backgroundColor:'rgba(202, 203, 203, 0.2 )' }}>
+          <View style={styles.titleBar} className="title-bar">
+            <Text style={styles.titleText}>Movies</Text>
+            <Image
+            style={styles.titleIcon}
+            source={require('./img/more.png')}
+          />
+          </View>
+     
+          {/* movies container */}
+          {
+            this.state.movies.map(movie => {
+              return(
+                          <TouchableHighlight underlayColor='rgba(0,0,0,0.2)' onPress={() => {
+                           Linking.openURL(movie.link)
+                           console.log('opening' + movie.link)
+                         
+                          }} key={movie._id}>
+
+                <View style={styles.movieContainer}  >
+                <Image style={styles.movieImage}
+                  source={{
+                    uri: movie.poster}}
+                /> 
+                <Text style={styles.movieTitle}>{movie.title}</Text>
+                <Text style={styles.movieDirector}>Rating: {movie.rating}</Text>
+ 
+                </View>
+
+                          </TouchableHighlight>
+                          
+              )
+            })
+}     
+
+          </ScrollView>
+          <View style={{position: 'absolute', bottom: 0, left: 0, right: 0, height: 85,backgroundColor: 'black'}}></View>
+      {/* search bar */}
+      <View style={{flexDirection: 'row', width: '100%'}}>
+          <TextInput 
+            style={styles.searchBar}
+            placeholder="Search Movie Here..."
+          />
+          <Image 
+            style={styles.searchIcon}
+            source={require('./img/search.svg')}
+          />
+          </View>
+        </View>
+          
+        
+          </>
+    
+      )
+    }
+
+    return null
+  
+  }
+}
 
 const styles = StyleSheet.create({
   titleBar: {
@@ -31,8 +120,9 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     width: '90%',
-    height: 55,
-    marginTop: '3.5%',
+    height: 50,
+    marginTop: '1.5%',
+    marginBottom: 15,
     marginLeft: '5%',
     backgroundColor: 'rgba(202, 203, 203, 0.3 )',
     fontSize: 18,
@@ -48,8 +138,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     position: 'absolute',
-    left: '9%',
-    top: '42%'
+    left: '9%'
   },
 
   movieContainer: {
@@ -68,8 +157,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
     borderBottomLeftRadius: 15,
-    width: 110,
-    height: 120
+    width: 90,
+    height: 100,
+    resizeMode: 'cover'
   },
   movieTitle: {
     fontSize: 20,
@@ -102,79 +192,7 @@ const styles = StyleSheet.create({
     height: 140
   }
 
-})
-
-class App extends React.Component{
-  state = {
-    isLoaded: false, 
-    movies: []
-  }
-  
-  componentDidMount(){
-    axios.get('https://backend-steel.now.sh/movies')
-    .then((res) => {
-      this.setState({
-        movies: res.data,
-        isLoaded: true
-      })
-    })
-    .catch(error => console.log(error))
-  }
-  
-  render(){  
-    if(this.state.isLoaded){
-      console.log(`The number of movies is ${this.state.movies.length}`)
-      return(
-        <>
-          <ScrollView style={{width: '100%', flex: 1, backgroundColor:'rgba(202, 203, 203, 0.2 )' }}>
-          <View style={styles.titleBar} className="title-bar">
-            <Text style={styles.titleText}>Movies</Text>
-            <Image
-            style={styles.titleIcon}
-            source={require('./img/more.png')}
-          />
-          </View>
-  
-          {/* search bar */}
-          <View style={{flexDirection: 'row', width: '100%'}}>
-          <TextInput 
-            style={styles.searchBar}
-            placeholder="Search Movie Here..."
-          />
-          <Image 
-            style={styles.searchIcon}
-            source={require('./img/search.svg')}
-          />
-          </View>
-  
-     
-          {/* movies container */}
-          {
-            this.state.movies.map(movie => {
-              return(
-                          <View style={styles.movieContainer} key={movie._id}>
-                <Image style={styles.movieImage}
-                  source={{
-                    uri: movie.posterUrl.length > 0 ? movie.posterUrl : 'https://icons-for-free.com/iconfiles/png/512/clapper+cut+director+making+movie+take+icon-1320195777589696004.png'
-                  }}
-                /> 
-                <Text style={styles.movieTitle}>{movie.title}</Text>
-                <Text style={styles.movieDirector}>Director: {movie.director}</Text>
-                <Text style={styles.movieCast}>Cast: {movie.actors}</Text>
-                </View>
-
-              )
-            })
-}     
-          </ScrollView>
-        </>
-      )
-    }
-
-    return null
-  
-  }
-}
+}) 
 
 
 export default App;
