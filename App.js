@@ -47,7 +47,7 @@ class App extends React.Component{
             <View style={styles.header}>
               <Image
                style={styles.topIcon}
-               source={require('./assets/menu-grid.png')}
+               source={require('./assets/applogo.png')}
               />
               <TextInput
                 style={styles.searchbar}
@@ -118,6 +118,7 @@ class App extends React.Component{
                    width: 35,
                    height: 35
                  }}
+                 source={require('./assets/album.png')}
                 />
               </View>        
              </View>
@@ -252,14 +253,12 @@ class App extends React.Component{
                        source={require('./assets/logo.png')}
                        />
                      </View>
-                     
-                     
-                      </View> 
+                    </View> 
    
                   )
                 })
               }
-              
+              <View style={{height:250}} />
             </ScrollView>
           
           </View>
@@ -282,10 +281,10 @@ const styles = StyleSheet.create({
   },
   topIcon: {
     position: 'absolute',
-    left:'10%',
-    top: 10,
-    width: 25, 
-    height: 25
+    left:'2.5%',
+    top: 5,
+    width: 65, 
+    height: 45
   },
   searchbar: { 
     position: 'absolute',
