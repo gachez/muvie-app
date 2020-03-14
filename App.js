@@ -19,7 +19,7 @@ class App extends React.Component{
   state = {
     isLoaded: false, 
     movies: [],
-    search: ''
+    text: ''
   }
   
 
@@ -39,7 +39,7 @@ class App extends React.Component{
   render(){  
     if(this.state.isLoaded){
       
-      console.log(this.state.search)
+      console.log(this.state.text)
       return(
         <>
           <View style={styles.container}>
@@ -52,6 +52,7 @@ class App extends React.Component{
               <TextInput
                 style={styles.searchbar}
                 placeholder = "Search by title, genre"
+                onChangeText={(text) => this.setState({text})}
               />
             </View>
             {/* mobile sidebar */}
@@ -134,6 +135,9 @@ class App extends React.Component{
                 {/* movie card */}
 
                 {
+
+                  this.state.text.length <= 0 ? 
+
                   this.state.movies.map(movie => {
                     return(
                       <View style={{ marginBottom: 20}} key={movie._id}>
@@ -193,7 +197,68 @@ class App extends React.Component{
      
                     )
                   })
-                }
+                 
+                :
+                this.state.movies.filter(movie => movie.title.includes(this.state.text) || movie.genre.includes(this.state.text)).map(movie => {
+                  return(
+                    <View style={{ marginBottom: 20}} key={movie._id}>
+                    <Image 
+                      style={{
+                        width: 230, 
+                        height: 250,
+                        marginLeft: 15,
+                        borderBottomLeftRadius: 10,
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                        borderBottomRightRadius: 10
+                       }}
+                      source={{
+                        uri: movie.poster
+                      }}
+                     />
+                     <View>
+                       <Text style={
+                         {
+                           fontSize: 18,
+                           fontWeight: '700',
+                           textTransform: 'uppercase',
+                           paddingLeft: 15,
+                           paddingTop: 5
+                         }
+                        }>{movie.title}</Text>
+                       <Text style={
+                         {
+                           position: 'absolute',
+                           top: -35,
+                           fontSize: 22,
+                           fontWeight: '700',
+                           color: 'white',
+                           left: 24
+                         }
+                        }>{movie.rating === 'not yet rated' ? ' ' : movie.rating}</Text>
+                       <Image 
+                       style={{
+                         width: 40,
+                         height: 30,
+                         position:'absolute',
+                         top: -35,
+                         left: 60,
+   
+                         borderBottomLeftRadius: 10,
+                         borderTopLeftRadius: 10,
+                         borderTopRightRadius: 10,
+                         borderBottomRightRadius: 10
+                       }}
+                       source={require('./assets/logo.png')}
+                       />
+                     </View>
+                     
+                     
+                      </View> 
+   
+                  )
+                })
+              }
               
             </ScrollView>
           
