@@ -7,20 +7,24 @@ import {
   Text,
   Image,
   StyleSheet,
-  TouchableHighlight
+  TouchableHighlight,
+  KeyboardAvoidingView,
+  Animated
 } from 'react-native';
 import { Linking } from 'expo';
 
-
-const YourOwnComponent = () => <Text>Your Pretty Component Goes Here</Text>
+const { State: TextInputState } = TextInput;
 
 class App extends React.Component{
   state = {
     isLoaded: false, 
-    movies: []
+    movies: [],
+    search: ''
   }
   
-  componentDidMount(){
+
+
+  componentDidMount() {
     axios.get('https://backend-steel.now.sh/movies')
     .then((res) => {
       this.setState({
@@ -30,169 +34,233 @@ class App extends React.Component{
     })
     .catch(error => console.log(error))
   }
+
   
   render(){  
     if(this.state.isLoaded){
-      console.log(`The number of movies is ${this.state.movies.length}`)
+      
+      console.log(this.state.search)
       return(
         <>
-        <View style={{flex: 1}}>
-        <ScrollView style={{width: '100%', flex: 1, backgroundColor:'rgba(202, 203, 203, 0.2 )' }}>
-          <View style={styles.titleBar} className="title-bar">
-            <Text style={styles.titleText}>Movies</Text>
-            <Image
-            style={styles.titleIcon}
-            source={require('./img/more.png')}
-          />
-          </View>
-     
-          {/* movies container */}
-          {
-            this.state.movies.map(movie => {
-              return(
-                          <TouchableHighlight underlayColor='rgba(0,0,0,0.2)' onPress={() => {
-                           Linking.openURL(movie.link)
-                           console.log('opening' + movie.link)
-                         
-                          }} key={movie._id}>
+          <View style={styles.container}>
+            {/* header top bar */}
+            <View style={styles.header}>
+              <Image
+               style={styles.topIcon}
+               source={require('./assets/menu-grid.png')}
+              />
+              <TextInput
+                style={styles.searchbar}
+                placeholder = "Search by title, genre"
+              />
+            </View>
+            {/* mobile sidebar */}
+            <View style={styles.sidebar}>  
+              <View style={[
+                styles.sideIcon, 
+                {
+                 position: 'absolute',
+                 top: '22.5%',
+                 left: '25%'
+                 }]}>
+               <Image
+                style={{
+                  width: 35,
+                  height: 35
+                }}
+                source={require('./assets/cinema.png')}
+              />         
+              </View>
 
-                <View style={styles.movieContainer}  >
-                <Image style={styles.movieImage}
-                  source={{
-                    uri: movie.poster}}
-                /> 
-                <Text style={styles.movieTitle}>{movie.title}</Text>
-                <Text style={styles.movieDirector}>Rating: {movie.rating}</Text>
- 
-                </View>
+              <View style={[
+                styles.sideIcon, 
+                {
+                 position: 'absolute',
+                 top: '37.5%',
+                 left: '25%'
+                 }]}>
+               <Image
+                style={{
+                  width: 35,
+                  height: 35
+                }}
+                source={require('./assets/popcorn.png')}
+              />         
+              </View>
 
-                          </TouchableHighlight>
-                          
-              )
-            })
-}     
+              <View style={[
+                styles.sideIcon, 
+                {
+                 position: 'absolute',
+                 top: '52.5%',
+                 left: '25%'
+                 }]}>
+               <Image
+                style={{
+                  width: 35,
+                  height: 35
+                }}
+                source={require('./assets/theater.png')}
+              />         
+              </View>
 
-          </ScrollView>
-          <View style={{position: 'absolute', bottom: 0, left: 0, right: 0, height: 85,backgroundColor: 'black'}}></View>
-      {/* search bar */}
-      <View style={{flexDirection: 'row', width: '100%'}}>
-          <TextInput 
-            style={styles.searchBar}
-            placeholder="Search Movie Here..."
-          />
-          <Image 
-            style={styles.searchIcon}
-            source={require('./img/search.svg')}
-          />
-          </View>
-        </View>
+              <View style={[
+                styles.sideIcon,
+                {
+                  position: 'absolute',
+                  top: '85%',
+                  left: '25%'
+                }
+              ]}>
+                <Image
+                 style={{
+                   width: 35,
+                   height: 35
+                 }}
+                />
+              </View>        
+             </View>
           
-        
-          </>
-    
+             {/* movies container */}
+             <ScrollView style={styles.moviesContainer}>
+              
+                <Text style={{ 
+                  margin: 15,          
+                  fontSize: 20,
+                  fontWeight: '700',
+                  color: 'black'
+                }}>Featured films</Text>
+
+                {/* movie card */}
+
+                {
+                  this.state.movies.map(movie => {
+                    return(
+                      <View style={{ marginBottom: 20}} key={movie._id}>
+                      <Image 
+                        style={{
+                          width: 230, 
+                          height: 250,
+                          marginLeft: 15,
+                          borderBottomLeftRadius: 10,
+                          borderTopLeftRadius: 10,
+                          borderTopRightRadius: 10,
+                          borderBottomRightRadius: 10
+                         }}
+                        source={{
+                          uri: movie.poster
+                        }}
+                       />
+                       <View>
+                         <Text style={
+                           {
+                             fontSize: 18,
+                             fontWeight: '700',
+                             textTransform: 'uppercase',
+                             paddingLeft: 15,
+                             paddingTop: 5
+                           }
+                          }>{movie.title}</Text>
+                         <Text style={
+                           {
+                             position: 'absolute',
+                             top: -35,
+                             fontSize: 22,
+                             fontWeight: '700',
+                             color: 'white',
+                             left: 24
+                           }
+                          }>{movie.rating === 'not yet rated' ? ' ' : movie.rating}</Text>
+                         <Image 
+                         style={{
+                           width: 40,
+                           height: 30,
+                           position:'absolute',
+                           top: -35,
+                           left: 60,
+     
+                           borderBottomLeftRadius: 10,
+                           borderTopLeftRadius: 10,
+                           borderTopRightRadius: 10,
+                           borderBottomRightRadius: 10
+                         }}
+                         source={require('./assets/logo.png')}
+                         />
+                       </View>
+                       
+                       
+                        </View> 
+     
+                    )
+                  })
+                }
+              
+            </ScrollView>
+          
+          </View>
+        </>    
       )
     }
-
-    return null
-  
+    return null  
   }
 }
 
 const styles = StyleSheet.create({
-  titleBar: {
-    flexDirection: 'row',
-    marginTop: '10.5%',
-    marginLeft: '5%',
-    width: '90%',
-    height: 80
+  container: {
+    flex: 1,
+    backgroundColor: '#BABBC2'
   },
-  titleText: {
-    height: 80,
-    fontSize: 45,
-    fontWeight: "700"
+  header: {
+    height: 55,
+    width: '100%',
+    marginTop: 50
   },
-  titleIcon: {
+  topIcon: {
     position: 'absolute',
-    right: 0,
-    width: 30,
-    height: 30,
-    top: '25%'
+    left:'10%',
+    top: 10,
+    width: 25, 
+    height: 25
   },
-  searchBar: {
-    width: '90%',
-    height: 50,
-    marginTop: '1.5%',
-    marginBottom: 15,
-    marginLeft: '5%',
-    backgroundColor: 'rgba(202, 203, 203, 0.3 )',
+  searchbar: { 
+    position: 'absolute',
+    right: 1,
+    height: 50, 
+    width: '75%',
+    color: 'rgba(0,0,0,0.9)',
     fontSize: 18,
-    textAlign: 'left',
-    borderBottomRightRadius: 20,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
-    paddingLeft: 15
-
-  },
-  searchIcon: {
-    width: 40,
-    height: 40,
-    position: 'absolute',
-    left: '9%'
-  },
-
-  movieContainer: {
-    width: '90%',
-    flexDirection: 'row',
-    marginTop: '7.5%',
-    marginLeft: '5%',
- 
-    borderBottomRightRadius: 15,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderBottomLeftRadius: 15
-  },
-  movieImage: {
-    borderBottomRightRadius: 15,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
+    fontWeight: '800',
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    paddingLeft: 15,
     borderBottomLeftRadius: 15,
-    width: 90,
-    height: 100,
-    resizeMode: 'cover'
-  },
-  movieTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: 'black',
-    position: 'absolute',
-    left: 120,
-    top: 1,
-    width: 215
-  },
-  movieDirector: {
-    fontSize: 16,
-    fontWeight: "300",
-    color: '#000',
-    position: 'absolute',
-    top: 30,
-    opacity: 0.7,
-    left: 120,
-    width: 200
-  },
-  movieCast: {
-    fontSize: 16,
-    fontWeight: "300",
-    color: '#000',
-    position: 'absolute',
-    top: 65,
-    opacity: 0.7,
-    left: 120,
-    width: 210,
-    height: 140
-  }
-
+    borderTopLeftRadius: 15
+    },
+    sidebar: {
+      width: '25%',
+      height: '100%',
+      position: 'absolute',
+      left: 0
+    },
+    sideIcon: { 
+      height: 55,
+      width: 55,
+      borderBottomLeftRadius: 10,
+      borderTopLeftRadius: 10,
+      borderTopRightRadius: 10,
+      borderBottomRightRadius: 10,
+      backgroundColor: '#E3E4E6',
+      justifyContent: 'center',
+      alignItems: 'center'      
+      },
+      moviesContainer: {
+        width: '75%',
+        height: '100%',
+        marginTop: '35%',
+        backgroundColor: '#E3E4E6',
+        position: 'absolute',
+        right: 0,
+        borderTopLeftRadius: 10
+      }
 }) 
-
 
 export default App;
