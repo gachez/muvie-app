@@ -1,330 +1,35 @@
-import React from 'react';
-import axios from 'axios';
-import {
-  TextInput,
-  ScrollView,
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableHighlight,
-  KeyboardAvoidingView,
-  Animated
-} from 'react-native';
-import { Linking } from 'expo';
+import * as React from 'react';
+import { View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './src/HomeScreen'
+import InfoScreen from './src/InfoScreen'
 
-const { State: TextInputState } = TextInput;
+const Stack = createStackNavigator();
 
-class App extends React.Component{
-  state = {
-    isLoaded: false, 
-    movies: [],
-    text: ''
-  }
-  
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+          screenOptions={{
+            headerShown: false
+          }}
+      >
+        <Stack.Screen 
+          name="Home" 
+          component={HomeScreen} 
+          />
+        <Stack.Screen 
+          name="Info" 
+          component={InfoScreen} 
+          />
+     
+      </Stack.Navigator>
 
-
-  componentDidMount() {
-    axios.get('https://backend-steel.now.sh/movies')
-    .then((res) => {
-      this.setState({
-        movies: res.data,
-        isLoaded: true
-      })
-    })
-    .catch(error => console.log(error))
-  }
-
-  
-  render(){  
-    if(this.state.isLoaded){
       
-      console.log(this.state.text)
-      return(
-        <>
-          <View style={styles.container}>
-            {/* header top bar */}
-            <View style={styles.header}>
-              <Image
-               style={styles.topIcon}
-               source={require('./assets/applogo.png')}
-              />
-              <TextInput
-                style={styles.searchbar}
-                placeholder = "Search by title, genre"
-                onChangeText={(text) => this.setState({text})}
-              />
-            </View>
-            {/* mobile sidebar */}
-            <View style={styles.sidebar}>  
-              <View style={[
-                styles.sideIcon, 
-                {
-                 position: 'absolute',
-                 top: '22.5%',
-                 left: '25%'
-                 }]}>
-               <Image
-                style={{
-                  width: 35,
-                  height: 35
-                }}
-                source={require('./assets/cinema.png')}
-              />         
-              </View>
-
-              <View style={[
-                styles.sideIcon, 
-                {
-                 position: 'absolute',
-                 top: '37.5%',
-                 left: '25%'
-                 }]}>
-               <Image
-                style={{
-                  width: 35,
-                  height: 35
-                }}
-                source={require('./assets/popcorn.png')}
-              />         
-              </View>
-
-              <View style={[
-                styles.sideIcon, 
-                {
-                 position: 'absolute',
-                 top: '52.5%',
-                 left: '25%'
-                 }]}>
-               <Image
-                style={{
-                  width: 35,
-                  height: 35
-                }}
-                source={require('./assets/theater.png')}
-              />         
-              </View>
-
-              <View style={[
-                styles.sideIcon,
-                {
-                  position: 'absolute',
-                  top: '85%',
-                  left: '25%'
-                }
-              ]}>
-                <Image
-                 style={{
-                   width: 35,
-                   height: 35
-                 }}
-                 source={require('./assets/album.png')}
-                />
-              </View>        
-             </View>
-          
-             {/* movies container */}
-             <ScrollView style={styles.moviesContainer}>
-              
-                <Text style={{ 
-                  margin: 15,          
-                  fontSize: 20,
-                  fontWeight: '700',
-                  color: 'black'
-                }}>Featured films</Text>
-
-                {/* movie card */}
-
-                {
-
-                  this.state.text.length <= 0 ? 
-
-                  this.state.movies.map(movie => {
-                    return(
-                      <View style={{ marginBottom: 20}} key={movie._id}>
-                      <Image 
-                        style={{
-                          width: 230, 
-                          height: 250,
-                          marginLeft: 15,
-                          borderBottomLeftRadius: 10,
-                          borderTopLeftRadius: 10,
-                          borderTopRightRadius: 10,
-                          borderBottomRightRadius: 10
-                         }}
-                        source={{
-                          uri: movie.poster
-                        }}
-                       />
-                       <View>
-                         <Text style={
-                           {
-                             fontSize: 18,
-                             fontWeight: '700',
-                             textTransform: 'uppercase',
-                             paddingLeft: 15,
-                             paddingTop: 5
-                           }
-                          }>{movie.title}</Text>
-                         <Text style={
-                           {
-                             position: 'absolute',
-                             top: -35,
-                             fontSize: 22,
-                             fontWeight: '700',
-                             color: 'white',
-                             left: 24
-                           }
-                          }>{movie.rating === 'not yet rated' ? ' ' : movie.rating}</Text>
-                         <Image 
-                         style={{
-                           width: 40,
-                           height: 30,
-                           position:'absolute',
-                           top: -35,
-                           left: 60,
      
-                           borderBottomLeftRadius: 10,
-                           borderTopLeftRadius: 10,
-                           borderTopRightRadius: 10,
-                           borderBottomRightRadius: 10
-                         }}
-                         source={require('./assets/logo.png')}
-                         />
-                       </View>
-                       
-                       
-                        </View> 
-     
-                    )
-                  })
-                 
-                :
-                this.state.movies.filter(movie => movie.title.includes(this.state.text) || movie.genre.includes(this.state.text)).map(movie => {
-                  return(
-                    <View style={{ marginBottom: 20}} key={movie._id}>
-                    <Image 
-                      style={{
-                        width: 230, 
-                        height: 250,
-                        marginLeft: 15,
-                        borderBottomLeftRadius: 10,
-                        borderTopLeftRadius: 10,
-                        borderTopRightRadius: 10,
-                        borderBottomRightRadius: 10
-                       }}
-                      source={{
-                        uri: movie.poster
-                      }}
-                     />
-                     <View>
-                       <Text style={
-                         {
-                           fontSize: 18,
-                           fontWeight: '700',
-                           textTransform: 'uppercase',
-                           paddingLeft: 15,
-                           paddingTop: 5
-                         }
-                        }>{movie.title}</Text>
-                       <Text style={
-                         {
-                           position: 'absolute',
-                           top: -35,
-                           fontSize: 22,
-                           fontWeight: '700',
-                           color: 'white',
-                           left: 24
-                         }
-                        }>{movie.rating === 'not yet rated' ? ' ' : movie.rating}</Text>
-                       <Image 
-                       style={{
-                         width: 40,
-                         height: 30,
-                         position:'absolute',
-                         top: -35,
-                         left: 60,
-   
-                         borderBottomLeftRadius: 10,
-                         borderTopLeftRadius: 10,
-                         borderTopRightRadius: 10,
-                         borderBottomRightRadius: 10
-                       }}
-                       source={require('./assets/logo.png')}
-                       />
-                     </View>
-                    </View> 
-   
-                  )
-                })
-              }
-              <View style={{height:250}} />
-            </ScrollView>
-          
-          </View>
-        </>    
-      )
-    }
-    return null  
-  }
+    </NavigationContainer>
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#BABBC2'
-  },
-  header: {
-    height: 55,
-    width: '100%',
-    marginTop: 50
-  },
-  topIcon: {
-    position: 'absolute',
-    left:'2.5%',
-    top: 5,
-    width: 65, 
-    height: 45
-  },
-  searchbar: { 
-    position: 'absolute',
-    right: 1,
-    height: 50, 
-    width: '75%',
-    color: 'rgba(0,0,0,0.9)',
-    fontSize: 18,
-    fontWeight: '800',
-    backgroundColor: 'rgba(255,255,255,0.6)',
-    paddingLeft: 15,
-    borderBottomLeftRadius: 15,
-    borderTopLeftRadius: 15
-    },
-    sidebar: {
-      width: '25%',
-      height: '100%',
-      position: 'absolute',
-      left: 0
-    },
-    sideIcon: { 
-      height: 55,
-      width: 55,
-      borderBottomLeftRadius: 10,
-      borderTopLeftRadius: 10,
-      borderTopRightRadius: 10,
-      borderBottomRightRadius: 10,
-      backgroundColor: '#E3E4E6',
-      justifyContent: 'center',
-      alignItems: 'center'      
-      },
-      moviesContainer: {
-        width: '75%',
-        height: '100%',
-        marginTop: '35%',
-        backgroundColor: '#E3E4E6',
-        position: 'absolute',
-        right: 0,
-        borderTopLeftRadius: 10
-      }
-}) 
 
 export default App;
