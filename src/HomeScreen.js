@@ -78,7 +78,13 @@ class HomeScreen extends React.Component{
             {/* mobile sidebar */}
             <View style={styles.sidebar}>  
              {/* genres side icon */}
-              <TouchableHighlight style={[
+              <TouchableHighlight
+              onPress={ () => {
+                this.props.navigation.navigate('Genres')
+              }
+                
+              }
+              style={[
                 styles.sideIcon, 
                 {
                  position: 'absolute',
@@ -218,7 +224,21 @@ class HomeScreen extends React.Component{
                 this.state.movies.filter(movie => movie.title.includes(this.state.text) || movie.genre.includes(this.state.text)).map(movie => {
                   return(
                     <View style={{ marginBottom: 20}} key={movie._id}>
-                    <Image 
+                    <TouchableHighlight underlayColor="white" onPress={() => {
+                         let film = {
+                            title: movie.title,
+                            genre: movie.genre,
+                            description: movie.description,
+                            rating: movie.rating,
+                            poster: movie.poster,
+                            trailer: movie.trailer
+                         }
+                        this._storeData(film)
+                         console.log('navigating..')
+                        this.props.navigation.navigate('Info');
+
+                     }}>
+                    <Image
                       style={{
                         width: 200, 
                         height: 240,
@@ -232,6 +252,8 @@ class HomeScreen extends React.Component{
                         uri: movie.poster
                       }}
                      />
+                      </TouchableHighlight> 
+                      
                      <View style={{margin: 1}}>
                        <Text style={styles.movieTitle}>{movie.title}</Text>
                        <Text style={styles.movieRating}>{movie.rating === 'not yet rated' ? ' ' : movie.rating}</Text>
@@ -252,7 +274,24 @@ class HomeScreen extends React.Component{
         </>    
       )
     }
-    return null  
+    return (
+      <View style={{
+        flex: 1,
+        backgroundColor:'#BABBC2',
+        justifyContent: 'center',
+        alignItems: 'center' 
+      }}>
+
+         <Image 
+          style={{
+            width: 100,
+            height: 65
+          }}
+          source={require('../assets/applogo.png')}
+         />
+
+      </View>
+    ) 
   }
 }
 

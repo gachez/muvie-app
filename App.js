@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './src/HomeScreen'
 import InfoScreen from './src/InfoScreen'
+import GenreScreen from './src/GenreScreen'
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,10 @@ function App() {
         <Stack.Screen 
           name="Info" 
           component={InfoScreen} 
+          />
+              <Stack.Screen 
+          name="Genres" 
+          component={GenreScreen} 
           />
      
       </Stack.Navigator>
