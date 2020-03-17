@@ -66,7 +66,10 @@ export default class InfoScreen extends React.Component{
                         {this.state.movie.title}
                      </Text>
                      <View style={styles.moviePlot}>
-                                    <Text style={styles.plotText}>{this.state.movie.description}</Text>    
+                         <ScrollView>
+                           <Text style={styles.plotText}>{this.state.movie.description}</Text>
+                         </ScrollView>
+                                 
                      </View>
      
                      <View style={styles.moreLikeHead}>
@@ -80,7 +83,7 @@ export default class InfoScreen extends React.Component{
                                 .filter(film => film.genre === this.state.movie.genre)
                                 .map(movie => {
                                     return(
-                                        <View style={styles.moreLikeCard}>
+                                        <View key={movie._id} style={styles.moreLikeCard}>
                                        <TouchableWithoutFeedback onPress={() => {
                                            this.setState({
                                                movie: {
@@ -186,9 +189,11 @@ const styles = StyleSheet.create({
      backIcon: {
         position: 'absolute',
          top: 25,
-         left: 25,
+         left: 20,
           width: 30,
-           height: 30
+           height: 30,
+           backgroundColor: 'white',
+           borderRadius: 30/2
          },
          trailerBtn: {
             position: 'absolute',
@@ -225,10 +230,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     ratingNumber: {
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: '700',
         position: 'absolute',
-        right: 50
+        right: 50,
+        top: 10
     },     
     ratingIcon: {
         width: 40,
@@ -242,8 +248,8 @@ const styles = StyleSheet.create({
     },
     moviePlot: {
         width: '90%',
-        height: 180,
         position: 'absolute',
+        height: 180,
         top: '38.75%',
         left: '5%',
         padding: 15,
@@ -251,17 +257,15 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 20,
         borderBottomLeftRadius: 20,
         borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        overflow: 'scroll'
+        borderTopRightRadius: 20
                 
     },
     plotText: {
         marginTop: 35.75,
         marginLeft: 15,
         fontWeight: '700',
-        fontSize: 18,
-        height: 100,
-        overflow: 'scroll'
+        fontSize: 16,
+        height: 'auto'
     },
     moreLikeContainer: {
         height: 160,

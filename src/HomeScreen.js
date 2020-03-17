@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import {
   AsyncStorage,  
@@ -11,24 +11,26 @@ import {
   StyleSheet,
   TouchableHighlight
 } from 'react-native';
+import Toast from 'react-native-simple-toast';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+
 class HomeScreen extends React.Component{
-    
-    static navigationOptions = {
-        title: 'Sign In'
-      };
   state = {
     isLoaded: false, 
     movies: [],
-    text: ''
+    text: '',
+    topRated: [],
+    tvShows: [],
+    topScrollTitle: 'Featured films and TV shows'
   }
   
 
 
   componentDidMount() {
+    // Get all films
     axios.get('https://backend-steel.now.sh/movies')
     .then((res) => {
       this.setState({
@@ -37,6 +39,24 @@ class HomeScreen extends React.Component{
       })
     })
     .catch(error => console.log(error))
+
+    // Get all top rated films
+    axios.get('https://backend-steel.now.sh/movies/comingsoon')
+    .then((res) => {
+      this.setState({
+        topRated: res.data
+      })
+    })
+    .catch(error => console.log(error));
+    
+    // Get all tv shows
+    axios.get('https://backend-steel.now.sh/movies/tvshows')
+    .then((res) => {
+      this.setState({
+        tvShows: res.data
+      })
+    })
+
   }
 
   _storeData = async (movie) => {
@@ -55,11 +75,7 @@ class HomeScreen extends React.Component{
   
   render(){  
     if(this.state.isLoaded){
-
-        this.clearAsyncStorage()
-      
-      console.log(this.state.text)
-      console.log(this.state.movies.length)
+      this.clearAsyncStorage()
       return(
         <>
           <View style={styles.container}>
@@ -71,7 +87,7 @@ class HomeScreen extends React.Component{
               />
               <TextInput
                 style={styles.searchbar}
-                placeholder = "Search movies,TV shows"
+                 placeholder = "Search movies,TV shows"
                 onChangeText={(text) => this.setState({text})}
               />
             </View>
@@ -80,6 +96,7 @@ class HomeScreen extends React.Component{
              {/* genres side icon */}
               <TouchableHighlight
               onPress={ () => {
+                Toast.show('Genres')
                 this.props.navigation.navigate('Genres')
               }
                 
@@ -107,7 +124,17 @@ class HomeScreen extends React.Component{
                  position: 'absolute',
                  top: '37.5%',
                  left: '25%'
-                 }]}>
+                 }]}
+                 onPress = {
+                   () => {
+                    Toast.show('Top rated', Toast.LONG);
+                     this.setState({
+                       movies: this.state.topRated,
+                       topScrollTitle: 'Top rated movies'
+                     })
+                   }
+                 }
+                 >
                <Image
                 style={{
                   width: 35,
@@ -124,7 +151,18 @@ class HomeScreen extends React.Component{
                  position: 'absolute',
                  top: '52.5%',
                  left: '25%'
-                 }]}>
+                 }]}
+                 
+                 onPress = {
+                   () => {
+                    Toast.show('TV Shows', Toast.LONG);
+                    this.setState({
+                      movies: this.state.tvShows,
+                      topScrollTitle: 'TV Shows and Series'
+                    })
+                   }
+                 }
+                 >
                <Image
                 style={{
                   width: 35,
@@ -161,7 +199,7 @@ class HomeScreen extends React.Component{
                   fontWeight: '700',
                   color: 'black'
                 }}>{
-                  this.state.text.length <= 0 ? 'Featured films and TV shows' : `Results for ${this.state.text}`
+                  this.state.text.length <= 0 ? this.state.topScrollTitle : `Results for ${this.state.text}`
                 }</Text>
 
                 {/* movie card mapped from the this.state.movies with a filtering function for 
@@ -262,8 +300,7 @@ class HomeScreen extends React.Component{
                        source={require('../assets/logo.png')}
                        />
                      </View>
-                    </View> 
-   
+                    </View>   
                   )
                 })
               }

@@ -29,7 +29,8 @@ export default class GenreScreen extends React.Component {
         media: [],
         isLoaded: false,
         selectedGenre: 'Action',
-        genreColor: 'black'
+        genreColor: 'black',
+        defaultState: []
     }
 
     componentDidMount() {
@@ -37,7 +38,8 @@ export default class GenreScreen extends React.Component {
         .then( res => {
             this.setState({
                 media: res.data,
-                isLoaded: true
+                isLoaded: true,
+                defaultState: res.data
             })
         })
         .catch(error => console.log(error));
@@ -56,46 +58,47 @@ export default class GenreScreen extends React.Component {
       clearAsyncStorage = async() => {
         AsyncStorage.clear();
     }
-    
 
+    resetState() {
+        return new Promise(resolve => {
+          this.setState({
+              media: this.state.defaultState
+          })
+          resolve('Set state to default')
+      }
+        )}
+    
     render(){
         if(this.state.isLoaded) {
+            console.log(this.state.media.length)
         return(
             <View style={styles.container}>
-              <View style={styles.header}>
-               <TouchableHighlight 
-                onPress={() => console.log('pressed close')}
-               >
-                    <Image
-                        style={styles.backIcon}
-                        source={require('../assets/close.png')}
-                    />   
-               </TouchableHighlight> 
-                
-              </View>
-              <View style={styles.heading}>
-                <Text style={styles.headingText}>genres</Text>
-              </View>
+   
               <View style={styles.genreList}>
                   <ScrollView style={styles.genreScroll} horizontal={true}>
                    {
                        genres.map(film => {
                            return(
-                           <TouchableWithoutFeedback
+                           <TouchableHighlight
+                           underlayColor='white'
+                           key = {film}
                              onPress={
-                                () => {
+                                async () => {                                    
+                                    const msg = await this.resetState()
+                                    console.log(msg)
                                     this.setState({
-                                        selectedGenre: film
+                                        media: this.state.media.filter(data => data.genre.toLowerCase() === film.toLowerCase())
                                     })
-                                }  
-                             }
+
+
+                             }}
                            >
                             <Text key={film} ref={(elem) => this.textElem = elem} elem style={[styles.genreName, {
                                 color: this.state.genreColor
                             }]}>
                                 {film}
                             </Text>
-                           </TouchableWithoutFeedback>    
+                           </TouchableHighlight>    
                             
                            )
                        })
@@ -111,7 +114,7 @@ export default class GenreScreen extends React.Component {
                        .map( movie => {
                            return(
                             <TouchableHighlight
-
+                            key={movie._id}
                             style={styles.mediaPoster}
                             underlayColor='white'
                             onPress={() => {
@@ -176,36 +179,10 @@ export default class GenreScreen extends React.Component {
 
 const styles = StyleSheet.create({
     container: {flex: 1, backgroundColor: '#BABBC2'},
-    header: {
-        width: '100%',
-        height: 60,
-        position: 'absolute',
-        top: 0
-    },
-    backIcon: {
-        width: 25,
-        height: 25,
-        position: 'absolute',
-        right: 25,
-        top: 50
-    },
-    heading: {
-        position: 'absolute',
-        top: '8%',
-        width: '100%',
-        height: 'auto'
-    }
-    ,
-    headingText: {
-        fontWeight: 'bold',
-        fontSize: 30,
-        padding: 15,
-        textTransform: 'uppercase'
-    },
     genreList: {
         width: '100%',
         position: 'absolute',
-        top: '18.75%',
+        top: '5%',
         height: 60
     },
     genreScroll: {
@@ -220,7 +197,7 @@ const styles = StyleSheet.create({
     mediaContainer: {
         width: '92.5%',
         left: '5%',
-        height: '74%',
+        height: '86.75%',
         position: 'absolute',
         bottom: 0,
         backgroundColor: '#E3E4E6',
